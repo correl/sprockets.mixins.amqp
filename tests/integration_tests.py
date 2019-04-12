@@ -15,6 +15,8 @@ LOGGER = logging.getLogger(__name__)
 def setUpModule():
     logging.getLogger('pika').setLevel(logging.INFO)
 
+started = 0
+stopped = 0
 
 class AsyncHTTPTestCase(testing.AsyncHTTPTestCase):
 

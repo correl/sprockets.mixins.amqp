@@ -26,6 +26,7 @@ try:
     from tornado import concurrent, ioloop
     from pika import exceptions
     import pika
+    import pika.adapters.tornado_connection
 except ImportError:  # pragma: nocover
     sys.stderr.write('setup.py import error compatibility objects created\n')
     concurrent, ioloop, exceptions, pika = \
@@ -373,14 +374,14 @@ class Client(object):
         When the connection is established, the on_connection_open method
         will be invoked by pika.
 
-        :rtype: pika.TornadoConnection
+        :rtype: pika.adapters.tornado_connection.TornadoConnection
 
         """
         if not self.idle and not self.closed:
             raise ConnectionStateError(self.state_description)
         LOGGER.debug('Connecting to %s', self.url)
         self.state = self.STATE_CONNECTING
-        self.connection = pika.TornadoConnection(
+        self.connection = pika.adapters.tornado_connection.TornadoConnection(
             parameters=self.parameters,
             on_open_callback=self.on_connection_open,
             on_open_error_callback=self.on_connection_open_error,
@@ -429,7 +430,7 @@ class Client(object):
         """This method is called by pika once the connection to RabbitMQ has
         been established.
 
-        :type connection: pika.TornadoConnection
+        :type connection: pika.adapters.tornado_connection.TornadoConnection
 
         """
         LOGGER.debug('Connection opened')
@@ -443,7 +444,7 @@ class Client(object):
     def on_connection_open_error(self, connection, error):
         """Invoked if the connection to RabbitMQ can not be made.
 
-        :type connection: pika.TornadoConnection
+        :type connection: pika.adapters.tornado_connection.TornadoConnection
         :param Exception error: The exception indicating failure
 
         """
@@ -492,7 +493,7 @@ class Client(object):
         closed unexpectedly. Since it is unexpected, we will reconnect to
         RabbitMQ if it disconnects.
 
-        :param pika.TornadoConnection connection: Closed connection
+        :param pika.adapters.tornado_connection.TornadoConnection connection: Closed connection
         :param int reply_code: The server provided reply_code if given
         :param str reply_text: The server provided reply_text if given
 
